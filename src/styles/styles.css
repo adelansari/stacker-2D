@@ -1,0 +1,30 @@
+/* Basic Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Darker Grotesque", sans-serif;
+  background-color: #d8eee8;
+  color: #001732;
+  padding: 16px;
+}
+
+.game-container {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+h1 {
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+
+.btn {
+  font-size: 24px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
