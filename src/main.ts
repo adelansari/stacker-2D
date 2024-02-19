@@ -15,19 +15,17 @@ let barDirection: "left" | "right" = "right";
 let isGameOver = false;
 let score = 0;
 
-const grid: HTMLElement | null = document.querySelector(".grid");
-const stackBtn: HTMLButtonElement | null = document.querySelector(".stack") as HTMLButtonElement | null;
-const scoreCounter: HTMLElement | null = document.querySelector(".score-counter");
-const endGameScreen: HTMLElement | null = document.querySelector(".end-game-screen");
-const playAgainButton: HTMLButtonElement | null = document.querySelector(".play-again") as HTMLButtonElement | null;
+const grid = document.querySelector(".grid") as HTMLElement;
+const stackBtn = document.querySelector(".stack") as HTMLButtonElement;
+const scoreCounter = document.querySelector(".score-counter") as HTMLElement;
+const endGameScreen = document.querySelector(".end-game-screen") as HTMLElement;
+const playAgainButton = document.querySelector(".play-again") as HTMLButtonElement;
 
 if (!grid || !stackBtn || !scoreCounter || !endGameScreen || !playAgainButton) {
   throw new Error("One or more required elements are missing in the HTML.");
 }
 
 function drawGrid() {
-  if (!grid) return;
-
   grid.innerHTML = "";
   gridMatrix.forEach((row) => {
     row.forEach((cell) => {
@@ -59,27 +57,69 @@ function moveBar() {
   drawGrid();
 }
 
+function performStackAction() {
+  if (currentRowIndex === 0) {
+    // If already at the top row, check for win condition
+    endGame(true); // Win condition if the stack reaches the top
+    return;
+  }
+
+  const currentRow = gridMatrix[currentRowIndex];
+  const rowBelow = gridMatrix[currentRowIndex - 1]; // Get the row below
+
+  let isStackAligned = false;
+  for (let i = 0; i < currentRow.length; i++) {
+    if (currentRow[i] === 1) {
+      if (rowBelow[i] === 1) {
+        isStackAligned = true;
+      } else {
+        currentRow[i] = 0; // Remove misaligned part of the stack
+      }
+    }
+  }
+
+  if (!isStackAligned) {
+    endGame(false); // Lose condition if no alignment
+    return;
+  }
+
+  currentRowIndex--; // Move to the next row
+  drawGrid();
+}
+
+function customPadStart(str: string, targetLength: number, padString: string = " "): string {
+  if (str.length >= targetLength) {
+    return str;
+  }
+
+  const padding = padString.repeat(targetLength - str.length);
+  return padding.substring(0, targetLength - str.length) + str;
+}
+
+function updateScore(newScore: number) {
+  score = newScore;
+  if (scoreCounter) {
+    scoreCounter.innerText = customPadStart(score.toString(), 5, "0");
+  }
+}
+
+function endGame(isWin: boolean) {
+  isGameOver = true;
+  endGameScreen.classList.remove("hidden");
+  endGameScreen.innerHTML = isWin ? "You Won!" : "Game Over";
+}
+
 stackBtn.addEventListener("click", () => {
   if (isGameOver) return;
-
-  // Logic for when the stack button is clicked
-  console.log("Stack action performed");
-  // Update game state and UI based on the stack action
-  // This might include checking for win/lose conditions, updating the score, etc.
-
-  // Placeholder logic
-  score += 10;
-  if (scoreCounter) scoreCounter.innerText = score.toString();
-
-  currentRowIndex--;
-  if (currentRowIndex < 0) {
-    // Handle game over or win
-    console.log("Game over or win");
-    isGameOver = true;
-    if (endGameScreen) endGameScreen.classList.remove("hidden");
-  }
+  performStackAction();
 });
 
 playAgainButton.addEventListener("click", () => {
   console.log("Play again button clicked.");
 });
+
+// Initial call to draw the grid when the page loads
+drawGrid();
+
+// Start the game movement
+setInterval(moveBar, 600);

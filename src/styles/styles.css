@@ -18,15 +18,8 @@ body {
   text-align: center;
 }
 
-h1 {
-  font-size: 40px;
+.game-panel {
   margin-bottom: 20px;
-}
-
-.btn {
-  font-size: 24px;
-  padding: 10px 20px;
-  cursor: pointer;
 }
 
 .score {
@@ -42,11 +35,49 @@ h1 {
   position: relative;
 }
 
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.cell {
+  width: 48px;
+  height: 48px;
+  border: 1px solid #001732; /* Or use background-color to make it visible */
+}
+
+.bar {
+  background-color: #f1754e; /* Color for the moving stack bar */
+}
+
+.btn {
+  font-size: 24px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
 .btn-full {
   width: 100%;
-  margin-top: 10px;
 }
 
 .hidden {
   display: none;
+}
+
+.end-game-screen {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(241, 117, 78, 0.7);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
 }
