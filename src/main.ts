@@ -1,15 +1,10 @@
-import { draw, moveBar } from "./gameFunctions/gameFunctions";
-import { gameState } from "./gameState/gameState";
-
-draw();
+import { draw } from "./utils/draw";
+import { moveBar } from "./utils/moveBar";
+import "./events";
 
 function main(): void {
   moveBar();
   draw();
 }
 
-gameState.gameInterval = setInterval(main, 600);
-
-if (gameState.isGameOver) {
-  clearInterval(gameState.gameInterval as number);
-}
+const gameInterval: number = setInterval(main, 600);
