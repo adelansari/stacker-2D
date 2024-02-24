@@ -9,12 +9,13 @@ body {
   padding: 16px;
   font-family: "Darker Grotesque", sans-serif;
   line-height: 1;
-  color: rgb(0, 23, 50);
-  background-color: rgb(216, 238, 232);
+  background: #0d1b2a;
+  color: rgb(246, 255, 253);
 }
 
 h1 {
   font-size: 40px;
+  text-align: center;
 }
 
 .btn {
@@ -23,11 +24,13 @@ h1 {
   padding: 4px 20px 8px 20px;
   cursor: pointer;
   text-transform: uppercase;
-  border: 2px solid rgb(0, 23, 50);
+  border: 2px solid rgb(0, 177, 200);
+  background-color: rgb(179, 241, 155);
 }
 
 .btn:hover {
-  background-color: rgb(203, 224, 221);
+  background-color: rgb(152, 216, 4);
+  color: black;
 }
 
 .btn-full {
@@ -38,13 +41,17 @@ h1 {
   display: flex;
   justify-content: space-between;
   font-size: 32px;
+  line-height: 0;
+  margin: 5%;
+  padding-top: 10px;
 }
 
-/* # Game grid */
+/* Game grid */
 .game-board {
   position: relative;
   margin-bottom: 8px;
-  border: 2px solid rgb(0, 23, 50);
+  border: 2px solid #014f86;
+  border-radius: 5px;
 }
 
 .game-container {
@@ -53,51 +60,71 @@ h1 {
 
 .grid {
   width: calc((48px * 6) + 4px);
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(6, 48px);
+  grid-template-rows: repeat(6, 48px);
 }
 
 .cell {
   width: 48px;
   height: 48px;
   cursor: pointer;
-  outline: 1px dashed black;
+  border: 1px solid #2f72a1;
 }
 
 .bar {
-  background-color: #f1754e;
+  background-color: #ff9a8b;
   border-radius: 8px;
   border: 2px solid rgb(0, 23, 50);
 }
 
-/* # Game over */
+/* Game over */
 .end-game-screen {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(241, 117, 78, 0.7);
-
-  align-items: center;
-  justify-content: center;
+  background-color: rgba(44, 2, 16, 0.8);
+  color: rgb(231, 91, 81);
   display: flex;
   flex-direction: column;
   text-align: center;
+  justify-content: center;
+  align-items: center;
   gap: 16px;
 }
 
 .win {
-  background-color: rgba(78, 241, 187, 0.7);
+  background-color: rgba(7, 0, 4, 0.9);
+  color: rgb(4, 255, 100);
 }
 
 .end-game-text {
-  font-size: 48px;
+  color: #7df9ff;
   font-family: "Press Start 2P", cursive;
+  font-size: 48px;
   text-transform: uppercase;
+  text-shadow: 1px 1px #aaf0d1, -1px -1px #aaf0d1;
+  animation: fade-pulse 2s infinite;
 }
 
-/* # Utilities */
+@keyframes fade-pulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+/* Utilities */
 .hidden {
   display: none;
 }
