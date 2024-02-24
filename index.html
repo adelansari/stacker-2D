@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stacker Game</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@700&family=Press+Start+2P&display=swap" rel="stylesheet" />
+
     <link href="./src/styles/styles.css" rel="stylesheet" />
   </head>
   <body>
@@ -18,8 +23,10 @@
 
       <main class="game-board">
         <div class="grid"></div>
+
+        <!-- Placeholder for Game Over screen -->
         <div class="end-game-screen hidden">
-          <h2 class="end-game-text">Game Over</h2>
+          <h2 class="end-game-text">Game<br />Over</h2>
           <button class="btn play-again">Play Again</button>
         </div>
       </main>
@@ -27,7 +34,6 @@
       <button class="btn btn-full stack">Stack</button>
     </div>
 
-    <!-- JavaScript -->
     <script src="./dist/main.js"></script>
   </body>
 </html>

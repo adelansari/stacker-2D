@@ -1,125 +1,197 @@
-type CellState = 0 | 1; // 0 for empty, 1 for filled
-type GridMatrix = CellState[][];
+//* -----------------------
+//* PREPARATION PHASE
+//* -----------------------
 
-function createGridMatrix(rows: number, cols: number, initialBarPosition: number): GridMatrix {
-  const grid = Array.from({ length: rows }, () => Array(cols).fill(0) as CellState[]);
-  grid[grid.length - 1] = Array(cols)
-    .fill(0)
-    .map((_, index) => (index < initialBarPosition ? 1 : 0)) as CellState[];
-  return grid;
-}
+// Select the relevant elements from the page
+const grid: HTMLElement | null = document.querySelector(".grid");
+const stackBtn: HTMLElement | null = document.querySelector(".stack");
+const scoreCounter: HTMLElement | null = document.querySelector(".score-counter");
+const endGameScreen: HTMLElement | null = document.querySelector(".end-game-screen");
+const endGameText: HTMLElement | null = document.querySelector(".end-game-text");
+const playAgainButton: HTMLElement | null = document.querySelector(".play-again");
 
-const gridMatrix: GridMatrix = createGridMatrix(8, 6, 3);
-let currentRowIndex = gridMatrix.length - 1;
-let barDirection: "left" | "right" = "right";
-let isGameOver = false;
-let score = 0;
+// Create the matrix for the grid
+// 0 = empty cell
+// 1 = bar
+const gridMatrix: number[][] = [
+  [0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0],
+  [1, 1, 1, 0, 0, 0], // This is our starting currentRowIndex (see below)
+];
 
-const grid = document.querySelector(".grid") as HTMLElement;
-const stackBtn = document.querySelector(".stack") as HTMLButtonElement;
-const scoreCounter = document.querySelector(".score-counter") as HTMLElement;
-const endGameScreen = document.querySelector(".end-game-screen") as HTMLElement;
-const playAgainButton = document.querySelector(".play-again") as HTMLButtonElement;
+// Initialise the variables needed for the game setup
+let currentRowIndex: number = gridMatrix.length - 1;
+let barDirection: string = "right";
+let barSize: number = 3;
+let isGameOver: boolean = false;
+let score: number = 0;
 
-if (!grid || !stackBtn || !scoreCounter || !endGameScreen || !playAgainButton) {
-  throw new Error("One or more required elements are missing in the HTML.");
-}
+// *---------------------------
+// * FUNCTIONS
+// *---------------------------
 
-function drawGrid() {
-  grid.innerHTML = "";
-  gridMatrix.forEach((row) => {
-    row.forEach((cell) => {
-      const cellElement = document.createElement("div");
-      cellElement.classList.add("cell");
-      if (cell === 1) {
-        cellElement.classList.add("bar");
+function draw(): void {
+  // First, reset the grid
+  if (grid) {
+    grid.innerHTML = "";
+  }
+
+  gridMatrix.forEach(function (rowContent: number[]) {
+    rowContent.forEach(function (cellContent: number) {
+      // Create a cell
+      const cell: HTMLElement = document.createElement("div");
+      cell.classList.add("cell");
+
+      // The cells that the bar occupies
+      if (cellContent === 1) {
+        cell.classList.add("bar");
       }
-      grid.appendChild(cellElement);
+
+      // Put the cell in the grid
+      if (grid) {
+        grid.appendChild(cell);
+      }
     });
   });
 }
 
-function moveBar() {
-  const currentRow = gridMatrix[currentRowIndex];
-  if (barDirection === "right") {
-    if (currentRow[currentRow.length - 1] === 1) {
-      barDirection = "left";
-    } else {
-      currentRow.push(currentRow.shift()!);
-    }
-  } else {
-    if (currentRow[0] === 1) {
-      barDirection = "right";
-    } else {
-      currentRow.unshift(currentRow.pop()!);
-    }
-  }
-  drawGrid();
+function moveRight(row: number[]): void {
+  row.pop();
+  row.unshift(0);
 }
 
-function performStackAction() {
-  if (currentRowIndex === 0) {
-    // If already at the top row, check for win condition
-    endGame(true); // Win condition if the stack reaches the top
-    return;
+function moveLeft(row: number[]): void {
+  row.shift();
+  row.push(0);
+}
+
+function isRightEdge(row: number[]): boolean {
+  const lastElement: number = row[row.length - 1];
+  return lastElement === 1;
+}
+
+function isLeftEdge(row: number[]): boolean {
+  const firstElement: number = row[0];
+  return firstElement === 1;
+}
+
+function moveBar(): void {
+  const currentRow: number[] = gridMatrix[currentRowIndex];
+
+  if (barDirection === "right") {
+    moveRight(currentRow);
+
+    if (isRightEdge(currentRow)) {
+      barDirection = "left";
+    }
+  } else if (barDirection === "left") {
+    moveLeft(currentRow);
+
+    if (isLeftEdge(currentRow)) {
+      barDirection = "right";
+    }
+  }
+}
+
+// *---------------------------
+// * GAME LOGIC / CONTROLS
+// *---------------------------
+function endGame(isVictory: boolean): void {
+  if (isVictory) {
+    if (endGameText) {
+      endGameText.innerHTML = "YOU<br>WON";
+    }
+    if (endGameScreen) {
+      endGameScreen.classList.add("win");
+    }
   }
 
-  const currentRow = gridMatrix[currentRowIndex];
-  const rowBelow = gridMatrix[currentRowIndex - 1]; // Get the row below
+  if (endGameScreen) {
+    endGameScreen.classList.remove("hidden");
+  }
+}
 
-  let isStackAligned = false;
+function onPlayAgain(): void {
+  location.reload();
+}
+
+function checkWin(): void {
+  if (currentRowIndex === 0 && !isGameOver) {
+    updateScore();
+    isGameOver = true;
+    clearInterval(gameInterval);
+    endGame(true);
+  }
+}
+
+function checkLost(): void {
+  const currentRow: number[] = gridMatrix[currentRowIndex];
+  const prevRow: number[] = gridMatrix[currentRowIndex + 1];
+
+  if (!prevRow) return;
+
   for (let i = 0; i < currentRow.length; i++) {
-    if (currentRow[i] === 1) {
-      if (rowBelow[i] === 1) {
-        isStackAligned = true;
-      } else {
-        currentRow[i] = 0; // Remove misaligned part of the stack
+    if (currentRow[i] === 1 && prevRow[i] === 0) {
+      currentRow[i] = 0;
+      barSize--;
+
+      if (barSize === 0) {
+        isGameOver = true;
+        clearInterval(gameInterval);
+        endGame(false);
       }
     }
   }
-
-  if (!isStackAligned) {
-    endGame(false); // Lose condition if no alignment
-    return;
-  }
-
-  currentRowIndex--; // Move to the next row
-  drawGrid();
 }
 
-function customPadStart(str: string, targetLength: number, padString: string = " "): string {
-  if (str.length >= targetLength) {
-    return str;
-  }
-
-  const padding = padString.repeat(targetLength - str.length);
-  return padding.substring(0, targetLength - str.length) + str;
-}
-
-function updateScore(newScore: number) {
-  score = newScore;
+function updateScore(): void {
+  score += barSize;
   if (scoreCounter) {
-    scoreCounter.innerText = customPadStart(score.toString(), 5, "0");
+    scoreCounter.innerText = score.toString().padStart(5, "0");
   }
 }
 
-function endGame(isWin: boolean) {
-  isGameOver = true;
-  endGameScreen.classList.remove("hidden");
-  endGameScreen.innerHTML = isWin ? "You Won!" : "Game Over";
+function onStack(): void {
+  checkLost();
+  checkWin();
+
+  if (isGameOver) return;
+
+  updateScore();
+
+  currentRowIndex = currentRowIndex - 1;
+  barDirection = "right";
+
+  for (let i = 0; i < barSize; i++) {
+    gridMatrix[currentRowIndex][i] = 1;
+  }
+
+  draw();
 }
 
-stackBtn.addEventListener("click", () => {
-  if (isGameOver) return;
-  performStackAction();
-});
+// *---------------------------
+// * EVENTS
+// *---------------------------
+if (stackBtn) {
+  stackBtn.addEventListener("click", onStack);
+}
+if (playAgainButton) {
+  playAgainButton.addEventListener("click", onPlayAgain);
+}
 
-playAgainButton.addEventListener("click", () => {
-  console.log("Play again button clicked.");
-});
+// *---------------------------
+// * START GAME
+// *---------------------------
+draw();
 
-// Initial call to draw the grid when the page loads
-drawGrid();
+function main(): void {
+  moveBar();
+  draw();
+}
 
-// Start the game movement
-setInterval(moveBar, 600);
+const gameInterval: number = setInterval(main, 600);
