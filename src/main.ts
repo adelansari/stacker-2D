@@ -1,10 +1,10 @@
 import { draw } from "./utils/draw";
 import { moveBar } from "./utils/moveBar";
-import "./events";
+import "./events.js";
 
-function main(): void {
+function main() {
   moveBar();
   draw();
 }
 
-const gameInterval: number = setInterval(main, 600);
+const gameInterval = setInterval(main, 600);

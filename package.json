@@ -4,7 +4,8 @@
   "description": "Stacker game in 2D using typescript, html and css",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel ./index.html"
   },
   "keywords": [],
   "author": "",
@@ -12,5 +13,9 @@
   "dependencies": {
     "@types/react-dom": "^18.2.19",
     "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.20",
+    "parcel": "^2.11.0"
   }
 }
